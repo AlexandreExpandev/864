@@ -6,9 +6,9 @@ import { logger } from '../../utils/logger';
  * Expected return types for database requests
  */
 export enum ExpectedReturn {
-  None = 0,   // No result expected (for operations that don't return data)
+  None = 0, // No result expected (for operations that don't return data)
   Single = 1, // Single record expected
-  Multi = 2   // Multiple records expected
+  Multi = 2, // Multiple records expected
 }
 
 /**
@@ -42,15 +42,15 @@ export async function dbRequest(
     switch (expectedReturn) {
       case ExpectedReturn.None:
         return { success: true };
-      
+
       case ExpectedReturn.Single:
         return result.recordset?.[0] || null;
-      
+
       case ExpectedReturn.Multi:
         if (resultSetNames && result.recordsets.length === resultSetNames.length) {
           // Return named result sets
           return resultSetNames.reduce((acc, name, index) => {
-            acc[name] = result.recordsets[index];
+            acc[name] = result.recordsets[index as keyof typeof result.recordsets];
             return acc;
           }, {} as Record<string, any>);
         }
@@ -61,7 +61,7 @@ export async function dbRequest(
     logger.error('Database request failed', {
       routine,
       parameters,
-      error
+      error,
     });
     throw error;
   }

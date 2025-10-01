@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { NumberSelector, SelectedNumberDisplay } from '@/domain/number/components';
 import { convertNumberToText } from '@/domain/number/utils';
+import { useNumbers } from '@/domain/number/hooks';
 
 /**
  * @component HomePage
@@ -13,6 +14,10 @@ import { convertNumberToText } from '@/domain/number/utils';
 export default function HomePage() {
   // #region States
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
+  // #endregion
+
+  // #region Queries
+  const { numbers, isLoading } = useNumbers();
   // #endregion
 
   // #region Memos
@@ -29,13 +34,19 @@ export default function HomePage() {
         <p className="text-center text-gray-600 mb-8">
           Selecione um número de 1 a 10 no menu abaixo para ver sua representação em texto.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
-          <NumberSelector
-            value={selectedNumber ?? undefined}
-            onChange={(value) => setSelectedNumber(value)}
-          />
-          <SelectedNumberDisplay text={numberAsText} />
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center">
+            <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin border-blue-500"></div>
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
+            <NumberSelector
+              value={selectedNumber ?? undefined}
+              onChange={(value) => setSelectedNumber(value)}
+            />
+            <SelectedNumberDisplay text={numberAsText} />
+          </div>
+        )}
       </div>
     </main>
   );

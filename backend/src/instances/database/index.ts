@@ -36,7 +36,7 @@ class Database {
 
     this.connecting = new Promise<sql.ConnectionPool>(async (resolve, reject) => {
       try {
-        const pool = new sql.ConnectionPool(config.database);
+        const pool = new sql.ConnectionPool(config.database as sql.config);
         this.pool = await pool.connect();
         logger.info('Database connection established');
         resolve(this.pool);

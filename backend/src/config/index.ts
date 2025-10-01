@@ -11,21 +11,21 @@ export const config = {
     database: process.env.DB_NAME || 'lista_inteiros',
     options: {
       encrypt: process.env.DB_ENCRYPT === 'true',
-      trustServerCertificate: process.env.NODE_ENV === 'development'
-    }
+      trustServerCertificate: process.env.NODE_ENV === 'development',
+    },
   },
   api: {
     port: parseInt(process.env.PORT || '3000'),
     cors: {
       origin: process.env.CORS_ORIGIN || '*',
-      credentials: true
-    }
+      credentials: true,
+    },
   },
   security: {
-    jwtSecret: process.env.JWT_SECRET || 'lista-inteiros-secret-key',
-    jwtExpiration: process.env.JWT_EXPIRATION || '24h'
+    jwtSecret: (process.env.JWT_SECRET || 'lista-inteiros-secret-key') as string,
+    jwtExpiration: (process.env.JWT_EXPIRATION || '24h') as string,
   },
   logging: {
-    level: process.env.LOG_LEVEL || 'info'
-  }
+    level: process.env.LOG_LEVEL || 'info',
+  },
 };

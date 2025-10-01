@@ -21,6 +21,19 @@ export const useNumbers = (): UseNumbersReturn => {
   } = useQuery({
     queryKey: NUMBERS_QUERY_KEY,
     queryFn: numberService.getNumbersList,
+    // Add a fallback for when the API is not available during development
+    placeholderData: [
+      { number: 1, text: 'Um' },
+      { number: 2, text: 'Dois' },
+      { number: 3, text: 'Três' },
+      { number: 4, text: 'Quatro' },
+      { number: 5, text: 'Cinco' },
+      { number: 6, text: 'Seis' },
+      { number: 7, text: 'Sete' },
+      { number: 8, text: 'Oito' },
+      { number: 9, text: 'Nove' },
+      { number: 10, text: 'Dez' },
+    ],
   });
 
   return {

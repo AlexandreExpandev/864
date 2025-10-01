@@ -17,7 +17,14 @@ export const apiClient = axios.create({
 
 // You can add interceptors for handling auth tokens, errors, etc.
 apiClient.interceptors.response.use(
-  (response) => response.data, // Return the data part of the response
+  (response) => {
+    // Check if the response has a data property that contains the actual data
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      return response.data;
+    }
+    // Otherwise return the whole response data
+    return response.data;
+  },
   (error) => {
     // Handle errors globally
     console.error('API Error:', error.response?.data || error.message);
