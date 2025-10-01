@@ -2,6 +2,8 @@ name: Deploy React Frontend to Azure Web App
 
 on:
   workflow_dispatch:
+  # Push trigger comentado para evitar deploy automático no primeiro commit
+  # Descomente as linhas abaixo se quiser deploy automático em futuros pushes:
   # push:
   #   branches:
   #     - main
@@ -24,19 +26,20 @@ jobs:
       - name: Create production environment file
         working-directory: ./frontend
         run: |
-          echo "REACT_APP_API_URL=https://expandev-app-05.azurewebsites.net/api" > .env.production
+          echo "REACT_APP_API_URL=https://expandev-app-05.azurewebsites.net/api/external" > .env.production
           cat .env.production
 
       - name: npm install, build, and test
         working-directory: ./frontend
         run: |
           npm install
+          REACT_APP_API_URL=https://expandev-app-05.azurewebsites.net/api/external npm run build
           npm run test --if-present -- --passWithNoTests || true
-          npm run build
 
       - name: Copy static server files
         working-directory: ./frontend
         run: |
+          # Detectar pasta de build (Vite usa dist/, CRA usa build/)
           if [ -d "dist" ]; then
             BUILD_DIR="dist"
             echo "Using Vite output directory: dist/"
