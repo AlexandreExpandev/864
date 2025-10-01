@@ -26,14 +26,17 @@ jobs:
       - name: Create production environment file
         working-directory: ./frontend
         run: |
-          echo "REACT_APP_API_URL=https://expandev-app-05.azurewebsites.net/api/external" > .env.production
+          echo "Creating .env.production with backend URL: https://expandev-app-05.azurewebsites.net"
+          echo "VITE_API_URL=https://expandev-app-05.azurewebsites.net" > .env.production
+          echo "REACT_APP_API_URL=https://expandev-app-05.azurewebsites.net" >> .env.production
           cat .env.production
 
       - name: npm install, build, and test
         working-directory: ./frontend
         run: |
           npm install
-          REACT_APP_API_URL=https://expandev-app-05.azurewebsites.net/api/external npm run build
+          echo "Building with API URL: https://expandev-app-05.azurewebsites.net"
+          VITE_API_URL=https://expandev-app-05.azurewebsites.net REACT_APP_API_URL=https://expandev-app-05.azurewebsites.net npm run build
           npm run test --if-present -- --passWithNoTests || true
 
       - name: Copy static server files
