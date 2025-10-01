@@ -18,7 +18,7 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check endpoint
+// Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
@@ -43,7 +43,9 @@ process.on('SIGTERM', () => {
 
 // Server startup
 const server = app.listen(config.api.port, () => {
-  console.log(`Server running on port ${config.api.port} in ${process.env.NODE_ENV || 'development'} mode`);
+  console.log(
+    `Server running on port ${config.api.port} in ${process.env.NODE_ENV || 'development'} mode`
+  );
 });
 
 export default server;

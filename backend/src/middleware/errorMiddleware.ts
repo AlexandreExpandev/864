@@ -2,27 +2,31 @@ import { Request, Response, NextFunction } from 'express';
 import { logger } from '../utils/logger';
 
 /**
+ * @summary
  * Global error handling middleware
+ *
+ * @middleware errorMiddleware
  */
 export function errorMiddleware(err: any, req: Request, res: Response, next: NextFunction): void {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
+
   // Log the error
   logger.error('Error occurred', {
     path: req.path,
     method: req.method,
-    error: err.message,
-    stack: err.stack
+    statusCode,
+    message,
+    stack: err.stack,
   });
-
-  // Determine status code
-  const statusCode = err.statusCode || 500;
 
   // Send error response
   res.status(statusCode).json({
     success: false,
     error: {
-      message: statusCode === 500 ? 'Internal server error' : err.message,
-      code: err.code || 'SERVER_ERROR'
+      message,
+      code: err.code || 'INTERNAL_ERROR',
     },
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }

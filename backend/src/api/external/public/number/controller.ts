@@ -1,25 +1,51 @@
 import { Request, Response, NextFunction } from 'express';
-import { successResponse, errorResponse } from '../../../../utils/response/responseUtils';
+import { z } from 'zod';
+import { errorResponse, successResponse } from '../../../../utils/response';
 import { numberService } from '../../../../services/number';
 
 /**
- * @api {get} /api/external/public/numbers Get Numbers List
- * @apiName GetNumbers
- * @apiGroup Number
- * @apiVersion 1.0.0
+ * @summary
+ * Lists all available numbers with their text representations
  *
- * @apiDescription Returns a list of numbers with their text representations
+ * @function listHandler
+ */
+export async function listHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const numbers = await numberService.listNumbers();
+    res.json(successResponse(numbers));
+  } catch (error: any) {
+    next(error);
+  }
+}
+
+/**
+ * @summary
+ * Gets a specific number by its numeric value and returns its text representation
  *
- * @apiSuccess {Object[]} data List of number objects
- * @apiSuccess {Number} data.number Numeric value
- * @apiSuccess {String} data.text Text representation
- *
- * @apiError {String} ServerError Internal server error
+ * @function getHandler
  */
 export async function getHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const numbers = numberService.getNumbersList();
-    res.json(successResponse(numbers));
+    const paramSchema = z.object({
+      id: z.coerce.number().int().min(1).max(10),
+    });
+
+    const result = paramSchema.safeParse(req.params);
+
+    if (!result.success) {
+      res.status(400).json(errorResponse('Invalid number. Must be between 1 and 10.'));
+      return;
+    }
+
+    const { id } = result.data;
+    const number = await numberService.getNumberById(id);
+
+    if (!number) {
+      res.status(404).json(errorResponse('Number not found'));
+      return;
+    }
+
+    res.json(successResponse(number));
   } catch (error: any) {
     next(error);
   }

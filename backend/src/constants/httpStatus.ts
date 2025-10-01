@@ -1,5 +1,6 @@
 /**
- * HTTP status codes used throughout the application
+ * @summary
+ * HTTP status codes used in the application
  */
 export const HttpStatus = {
   // Success codes
@@ -7,7 +8,7 @@ export const HttpStatus = {
   CREATED: 201,
   ACCEPTED: 202,
   NO_CONTENT: 204,
-  
+
   // Client error codes
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
@@ -17,11 +18,10 @@ export const HttpStatus = {
   CONFLICT: 409,
   UNPROCESSABLE_ENTITY: 422,
   TOO_MANY_REQUESTS: 429,
-  
+
   // Server error codes
   INTERNAL_SERVER_ERROR: 500,
   NOT_IMPLEMENTED: 501,
   BAD_GATEWAY: 502,
   SERVICE_UNAVAILABLE: 503,
-  GATEWAY_TIMEOUT: 504
 };

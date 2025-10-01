@@ -1,6 +1,7 @@
 /**
  * @summary
- * Configuration settings for the application
+ * Application configuration settings loaded from environment variables
+ * with sensible defaults for development environments.
  */
 export const config = {
   database: {
@@ -22,8 +23,9 @@ export const config = {
     },
   },
   security: {
-    jwtSecret: (process.env.JWT_SECRET || 'lista-inteiros-secret-key') as string,
-    jwtExpiration: (process.env.JWT_EXPIRATION || '24h') as string,
+    jwtSecret: process.env.JWT_SECRET || 'dev-secret-key',
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
+    bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS || '10'),
   },
   logging: {
     level: process.env.LOG_LEVEL || 'info',

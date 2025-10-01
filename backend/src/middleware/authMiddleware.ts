@@ -3,50 +3,56 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config';
 
 /**
- * Authentication middleware for protected routes
+ * @summary
+ * Authentication middleware to protect routes
+ *
+ * @middleware authMiddleware
  */
-export async function authMiddleware(req: Request, res: Response, next: NextFunction): Promise<void> {
+export function authMiddleware(req: Request, res: Response, next: NextFunction): void {
   try {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       res.status(401).json({
         success: false,
         error: {
           message: 'Authentication required',
-          code: 'AUTH_REQUIRED'
+          code: 'AUTH_REQUIRED',
         },
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
       return;
     }
-    
+
     const token = authHeader.split(' ')[1];
-    
-    try {
-      const decoded = jwt.verify(token, config.security.jwtSecret);
-      req.user = decoded;
-      next();
-    } catch (error) {
+
+    if (!token) {
       res.status(401).json({
         success: false,
         error: {
-          message: 'Invalid or expired token',
-          code: 'INVALID_TOKEN'
+          message: 'Invalid token format',
+          code: 'INVALID_TOKEN_FORMAT',
         },
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
+      return;
     }
-  } catch (error) {
-    next(error);
-  }
-}
 
-// Extend Express Request interface to include user property
-declare global {
-  namespace Express {
-    interface Request {
-      user?: any;
-    }
+    // Verify token
+    const decoded = jwt.verify(token, config.security.jwtSecret);
+
+    // Add user info to request
+    (req as any).user = decoded;
+
+    next();
+  } catch (error) {
+    res.status(401).json({
+      success: false,
+      error: {
+        message: 'Invalid or expired token',
+        code: 'INVALID_TOKEN',
+      },
+      timestamp: new Date().toISOString(),
+    });
   }
 }
