@@ -1,15 +1,11 @@
-/**
- * @summary
- * Unit tests for number controller
- */
 import { Request, Response, NextFunction } from 'express';
-import { getHandler, convertHandler } from './controller';
-import { numberList, numberToText } from '../../../../services/number/numberService';
+import { listHandler, getHandler } from './controller';
+import * as numberService from '../../../../services/number';
 
 // Mock the number service
-jest.mock('../../../../services/number/numberService', () => ({
+jest.mock('../../../../services/number', () => ({
   numberList: jest.fn(),
-  numberToText: jest.fn(),
+  numberGet: jest.fn(),
 }));
 
 describe('Number Controller', () => {
@@ -26,82 +22,74 @@ describe('Number Controller', () => {
     mockNext = jest.fn();
   });
 
-  describe('getHandler', () => {
-    it('should return list of numbers', async () => {
-      // Mock the service response
-      (numberList as jest.Mock).mockReturnValue([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+  describe('listHandler', () => {
+    it('should return a list of numbers', async () => {
+      const mockNumbers = [
+        { id: 1, value: 1, text: 'Um' },
+        { id: 2, value: 2, text: 'Dois' },
+      ];
 
-      await getHandler(mockRequest as Request, mockResponse as Response, mockNext);
+      (numberService.numberList as jest.Mock).mockResolvedValue(mockNumbers);
 
-      expect(numberList).toHaveBeenCalled();
+      await listHandler(mockRequest as Request, mockResponse as Response, mockNext);
+
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
-        data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        metadata: expect.objectContaining({
-          timestamp: expect.any(String),
-        }),
+        data: mockNumbers,
+        timestamp: expect.any(String),
       });
     });
 
-    it('should call next with error if service throws', async () => {
-      const error = new Error('Service error');
-      (numberList as jest.Mock).mockImplementation(() => {
-        throw error;
-      });
+    it('should call next with error on failure', async () => {
+      const error = new Error('Test error');
+      (numberService.numberList as jest.Mock).mockRejectedValue(error);
 
-      await getHandler(mockRequest as Request, mockResponse as Response, mockNext);
+      await listHandler(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalledWith(error);
     });
   });
 
-  describe('convertHandler', () => {
-    it('should convert valid number to text', async () => {
-      mockRequest.params = { number: '5' };
-      (numberToText as jest.Mock).mockReturnValue('cinco');
+  describe('getHandler', () => {
+    it('should return a specific number', async () => {
+      const mockNumber = { id: 5, value: 5, text: 'Cinco' };
+      mockRequest.params = { id: '5' };
 
-      await convertHandler(mockRequest as Request, mockResponse as Response, mockNext);
+      (numberService.numberGet as jest.Mock).mockResolvedValue(mockNumber);
 
-      expect(numberToText).toHaveBeenCalledWith(5);
+      await getHandler(mockRequest as Request, mockResponse as Response, mockNext);
+
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
-        data: { number: 5, text: 'cinco' },
-        metadata: expect.objectContaining({
-          timestamp: expect.any(String),
-        }),
+        data: mockNumber,
+        timestamp: expect.any(String),
       });
     });
 
-    it('should return error for non-numeric input', async () => {
-      mockRequest.params = { number: 'abc' };
+    it('should return 404 when number not found', async () => {
+      mockRequest.params = { id: '11' };
 
-      await convertHandler(mockRequest as Request, mockResponse as Response, mockNext);
+      (numberService.numberGet as jest.Mock).mockResolvedValue(null);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          success: false,
-          error: expect.objectContaining({
-            code: 'invalidNumber',
-          }),
-        })
-      );
+      await getHandler(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        success: false,
+        error: {
+          message: 'Number not found',
+          details: undefined,
+        },
+        timestamp: expect.any(String),
+      });
     });
 
-    it('should return error for out of range number', async () => {
-      mockRequest.params = { number: '11' };
+    it('should return 400 for invalid number', async () => {
+      mockRequest.params = { id: 'abc' };
 
-      await convertHandler(mockRequest as Request, mockResponse as Response, mockNext);
+      await getHandler(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          success: false,
-          error: expect.objectContaining({
-            code: 'numberOutOfRange',
-          }),
-        })
-      );
     });
   });
 });

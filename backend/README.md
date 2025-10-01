@@ -1,15 +1,18 @@
-# Lista Inteiros API
+# Lista Inteiros Backend
 
-Backend API for the Lista Inteiros application, providing number-to-text conversion services.
+Backend API for the Lista Inteiros application, which provides a service for converting numbers to their text representation.
 
 ## Features
 
 - RESTful API for number-to-text conversion
-- Express.js with TypeScript
-- SQL Server database integration
-- Authentication middleware
-- Error handling and logging
-- Health check endpoint
+- Supports numbers from 1 to 10
+- Provides both list and individual number endpoints
+
+## API Endpoints
+
+- `GET /api/external/numbers` - List all available numbers with their text representations
+- `GET /api/external/numbers/:id` - Get a specific number by its numeric value
+- `GET /health` - Health check endpoint
 
 ## Getting Started
 
@@ -17,66 +20,47 @@ Backend API for the Lista Inteiros application, providing number-to-text convers
 
 - Node.js (v14 or higher)
 - npm or yarn
-- SQL Server (local or remote)
 
 ### Installation
 
 1. Clone the repository
-   ```bash
-   git clone https://github.com/your-username/lista-inteiros-api.git
-   cd lista-inteiros-api
+2. Install dependencies:
    ```
-
-2. Install dependencies
-   ```bash
    npm install
-   # or
-   yarn install
    ```
-
-3. Create environment file
-   ```bash
+3. Copy the example environment file:
+   ```
    cp .env.example .env
-   # Edit .env with your configuration
    ```
+4. Configure environment variables in the `.env` file
 
-4. Build the project
-   ```bash
-   npm run build
-   # or
-   yarn build
-   ```
+### Development
 
-5. Start the server
-   ```bash
-   npm start
-   # or
-   yarn start
-   ```
+Start the development server:
 
-### Development Mode
-
-```bash
+```
 npm run dev
-# or
-yarn dev
 ```
 
-## API Endpoints
+### Production Build
 
-### Public Endpoints
+Build the application:
 
-- `GET /api/external/numbers` - Get all numbers with text representations
-- `GET /api/external/numbers/:id` - Get specific number by ID (1-10)
-- `GET /health` - Health check endpoint
+```
+npm run build
+```
+
+Start the production server:
+
+```
+npm start
+```
 
 ## Project Structure
 
 ```
 src/
 ├── api/                  # API controllers
-│   ├── external/         # Public endpoints
-│   └── internal/         # Protected endpoints
 ├── config/               # Application configuration
 ├── constants/            # Application constants
 ├── instances/            # Service instances
@@ -84,17 +68,9 @@ src/
 ├── routes/               # Route definitions
 ├── services/             # Business logic
 ├── utils/                # Utility functions
-└── server.ts             # Application entry point
-```
-
-## Testing
-
-```bash
-npm test
-# or
-yarn test
+└── server.ts            # Application entry point
 ```
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.

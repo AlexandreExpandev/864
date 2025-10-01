@@ -3,7 +3,7 @@ import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 
-// Protected routes - add your authenticated routes here
-// Example: router.get('/resource', authMiddleware, controller.handler);
+// Protected routes - require authentication
+// No internal routes defined yet, but the structure is ready for future expansion
 
 export default router;

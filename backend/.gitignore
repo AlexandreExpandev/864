@@ -29,11 +29,3 @@ yarn-error.log*
 # OS files
 .DS_Store
 Thumbs.db
-
-# Test coverage
-coverage/
-
-# Temporary files
-temp/
-tmp/
-*.tmp
